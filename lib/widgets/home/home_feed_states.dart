@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 
+import 'home_archive.dart';
 import 'home_design.dart';
 
 /// 紧凑版空 / 错态：图标砖 + 标题 + 说明 + 可选动作。
@@ -49,7 +50,8 @@ class HomeStateView extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               color: palette.soft,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(homePanelRadius),
+              border: Border.all(color: palette.line),
             ),
             child: Icon(icon, size: 22, color: palette.accentText),
           ),
@@ -192,7 +194,8 @@ class HomeFeedError extends StatelessWidget {
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: palette.soft,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(homePanelRadius),
+              border: Border.all(color: palette.line),
             ),
             child: const Icon(
               LucideIcons.cloud_off,
@@ -201,6 +204,8 @@ class HomeFeedError extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
+          HomeCode('ERR / FEED', size: 9, color: palette.muted),
+          const SizedBox(height: 10),
           Text(
             headline,
             style: TextStyle(
@@ -221,11 +226,16 @@ class HomeFeedError extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: palette.soft,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(homePanelRadius),
+              border: Border.all(color: palette.line),
             ),
             child: Text(
               detail,
-              style: TextStyle(fontSize: 12, height: 1.6, color: palette.muted),
+              style: homeCodeStyle(
+                palette,
+                size: 11,
+                color: palette.muted,
+              ).copyWith(height: 1.6),
             ),
           ),
           const SizedBox(height: 24),
@@ -238,10 +248,45 @@ class HomeFeedError extends StatelessWidget {
               backgroundColor: HomePalette.accentStrong,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(homePanelRadius),
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 切分类时的占位。
+///
+/// 冷启动首载铺 `HomeSkeleton`（官方 `alx.xml` 的 `SkeletonLayout`），但横滑
+/// 切到一个还没进过的分类时，满屏脉冲骨架会被读成「整页重新加载了」——搜
+/// 索行和分类条也会跟着回来。这里对齐短剧页切频道的观感：一段安静的提示，
+/// 顶栏、分类条、滚动位置都留在原地。
+class HomeFeedLoading extends StatelessWidget {
+  const HomeFeedLoading({super.key, this.message = '正在刷新内容'});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = HomePalette.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 56),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 14,
+            height: 14,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: palette.muted,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(message, style: TextStyle(fontSize: 13, color: palette.muted)),
         ],
       ),
     );
